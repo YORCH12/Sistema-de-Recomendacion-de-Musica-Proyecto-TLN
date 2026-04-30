@@ -1,8 +1,3 @@
-"""
-Sistema de Recomendación Musical basado en PLN
-IPN - ESCOM | Procesamiento de Lenguaje Natural
-Equipo: Los 4 Fantásticos | Grupo: 5BM2
-"""
 
 import warnings
 import re
@@ -12,12 +7,6 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 warnings.filterwarnings('ignore')
 
-
-# ─────────────────────────────────────────────
-#  MÓDULO DE PLN: PREPROCESAMIENTO
-# ─────────────────────────────────────────────
-
-# Stopwords manuales ES + EN (sin depender de descargas NLTK)
 STOPWORDS_ES = {
     'de','la','el','en','y','a','que','los','se','las','un','por','con',
     'una','su','para','es','al','lo','como','más','pero','sus','me','ya',
@@ -45,29 +34,16 @@ STOPWORDS_EN = {
 
 STOPWORDS = STOPWORDS_ES | STOPWORDS_EN
 
-
 def preprocesar_letra(texto: str) -> str:
-    """
-    Fases de preprocesamiento de texto:
-    1. Minúsculas
-    2. Elimina etiquetas como [Coro], [Verse 1], [feat. ...]
-    3. Elimina caracteres no alfabéticos
-    4. Tokenización por espacios
-    5. Filtrado de stopwords y tokens muy cortos
-    """
-    # 1. Minúsculas
+
     texto = texto.lower()
 
-    # 2. Eliminar etiquetas entre corchetes (metadatos en letras)
     texto = re.sub(r'\[.*?\]', ' ', texto)
 
-    # 3. Conservar solo letras (español e inglés) y espacios
     texto = re.sub(r'[^a-záéíóúüñ\s]', ' ', texto)
 
-    # 4. Normalizar espacios múltiples
     texto = re.sub(r'\s+', ' ', texto).strip()
 
-    # 5. Tokenizar y filtrar stopwords + tokens de menos de 3 caracteres
     tokens = [
         token for token in texto.split()
         if token not in STOPWORDS and len(token) > 2
@@ -75,17 +51,7 @@ def preprocesar_letra(texto: str) -> str:
 
     return ' '.join(tokens)
 
-
-# ─────────────────────────────────────────────
-#  MÓDULO DE PLN: VECTORIZACIÓN Y SIMILITUD
-# ─────────────────────────────────────────────
-
 class SistemaRecomendacion:
-    """
-    Sistema de recomendación musical basado en similitud semántica de letras.
-    Utiliza TF-IDF para representación vectorial y similitud coseno para
-    encontrar canciones con contenido lírico similar.
-    """
 
     def __init__(self, ruta_dataset: str):
         self.df = pd.read_csv(ruta_dataset)
@@ -137,11 +103,6 @@ class SistemaRecomendacion:
         for i in scores_idx:
             if vector[0, i] > 0:
                 pass
-
-
-# ─────────────────────────────────────────────
-#  MAIN
-# ─────────────────────────────────────────────
 
 if __name__ == "__main__":
     pass
